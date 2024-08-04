@@ -29,10 +29,38 @@ path = ""
 
 #Set Location of text file containing Ids/webpage URLs. Ids must be separated by any delimiter. URLs need nothing
 #   It will read the largest consecutive group of numbers as 1 Id hence why Ids must be separated
-batch = ""
+batch = ".\\batch.txt"
+#Keys and values are to be provided in a [<key> = "<value>"] format.
+#   The spaces, = and the quotes are a must. The line is read and is stored into a config dict as <key>:<value> pairs where both the key and value are strings.
+#   Keys may contain only upper/lower english alphabets. Any double quote inside the value must preceded by a \(backslash).
+#   If a line starts with a non alphabetic character then that line is considered commented, but preferably use # to indicate comments
+#   Very Important Note: The first line should always be a newline if you manually create a config file.
+
+#Set file name structure
+#   Possible identifiers are {Id}, {Name}. Example: *name = "{Id}-{Name}"* will name the file as its id followed by its name with a "-" in between
+name = "" 
+
+#Set Path for output folder, defaults to %cwd%\hentai if left blank. Example: *path = ".\hentai"* means a hentai folder 
+#   where this file exists or you can just use the absolute path
+path = "" 
+
+#Set Location of text file containing Ids/webpage URLs. Ids must be separated by any delimiter. URLs need nothing
+#   It will read the largest consecutive group of numbers as 1 Id hence why Ids must be separated
+batch = ".\\batch.txt"
 
 #Set how many pages are downloaded at once, defaults to 1 if empty. Strongly do not recommend going above 4 threads.
-threads = ""
+threads = "4"
+
+#Sets the file type of the final output. Available types are pdf, cbz, cbt, cbz, img. Case-Sensitive. 
+#   img will loosely save the files, i.e save the png files as-is in a folder named after the naming scheme.
+#   Defaults to pdf for empty/any other value.
+type = "pdf"
+
+#Parameters below are manually created
+"
+
+#Set how many pages are downloaded at once, defaults to 1 if empty. Strongly do not recommend going above 4 threads.
+threads = "4"
 
 #Sets the file type of the final output. Available types are pdf, cbz, cbt, cbz, img. Case-Sensitive. 
 #   img will loosely save the files, i.e save the png files as-is in a folder named after the naming scheme.
@@ -78,7 +106,7 @@ def show_help():
             
             [ Batch Downloading from text file]
             -You can copy paste all the links of the doujins you want to download into a text file and set
-             the value of batch in the config.txt to the path of this text file.
+             the value of batch in the thread2 to the path of this text file.
             Example: 
                 Assume the text file "test.txt" in the same folder as the script has the following contents:
                     111111 222222https://nhentai.net/g/444444https://nhentai.net/g/555555
@@ -86,7 +114,7 @@ def show_help():
                 Then all you have to do is set the value of the batch line to 
                     batch = ".\test.txt"
                 and all the doujins posted will be downloaded when the script is run
-            Note: The batch line in the config.txt will be reset every time the script is executed.
+            Note: The batch line in the thread2 will be reset every time the script is executed.
                 
             [ Other Options ]
             When prompted, you may enter one of the other commands:
@@ -248,7 +276,8 @@ def get_command(output_folder, temp_folder, log, batch=""):
     num_input = batch if batch else get_input()
     while num_input[0] != "done":
         if P_set.match(num_input[0]): 
-            update_config(num_input[0])
+            # update_config(num_input[0])
+            print("config not resetting")
         elif num_input[0] == 'retry': 
             num_input = get_input()
             continue
@@ -265,17 +294,17 @@ def get_command(output_folder, temp_folder, log, batch=""):
 
 def update_config(cmd): #Update existing/add new parameters in config from console using set command
     cmd = P_set.findall(cmd)[0]
-    f = open('config.txt').read()
-    if re.findall(rf'{cmd[0]} = ".*"', f): #If parameter exists in config.txt, update existing
+    f = open('thread2').read()
+    if re.findall(rf'{cmd[0]} = ".*"', f): #If parameter exists in thread2, update existing
         content = re.sub(rf'{cmd[0]} = ".*"', rf'{cmd[0]} = "{cmd[1]}"', f)
     else: #Otherwise add new parameter
         content = f + f'\n{cmd[0]} = "{cmd[1]}"'
-    open('config.txt', 'w').write(content)
+    open('thread2', 'w').write(content)
     config[cmd[0]] = cmd[1] #Updates value in the already read config variable
     print('Done Successfully')
 
-def parse_config(): #Parse and check parameters in config.txt into a dict called config
-    f = open('config.txt').read()
+def parse_config(): #Parse and check parameters in thread2 into a dict called config
+    f = open('thread2').read()
 
     # Read into a dict
     config = defaultdict(lambda: None, {i: (j or None) for i, j in re.findall(r'\n([A-Za-z]+) = "(.*)"', f)})
@@ -313,9 +342,9 @@ def parse_config(): #Parse and check parameters in config.txt into a dict called
         if os.path.exists(config['batch']):
             batch = re.findall(r"\d+", open(config['batch']).read())
             print("\nDownloading the following ids:", *batch, sep="\n")
-            os.system("pause")
+         
             # Cleanup
-            open('config.txt', 'w').write(re.sub(r'batch = ".*"', r'batch = ""', f))
+            # open('thread2', 'w').write(re.sub(r'batch = ".*"', r'batch = ""', f))
         else:
             print('Such a file {} does not exist, skipping batch download'.format(config['batch']))
     print()
@@ -333,10 +362,10 @@ if __name__ == "__main__":
     # Made a global variable so as to gracefully terminate on KeyboardInterrupt. See below
     threads = []
 
-    if os.path.exists('config.txt'):
+    if os.path.exists('thread2'):
         config = parse_config()
     else:
-        open('config.txt', 'w').write(default_config)
+        open('thread2', 'w').write(default_config)
         config = parse_config()
 
     output_folder = config['path']
