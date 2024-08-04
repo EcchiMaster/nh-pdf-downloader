@@ -1,4 +1,4 @@
-# nhentai PDF Downloader
+# nhentai PDF Downloader (My Version)
 
 > Downloads and coverts any doujin/manga from nhentai to PDF
 
@@ -6,7 +6,7 @@
 
 #### Clone
 
-- Clone this repo to your local machine using `https://github.com/TacoAnime69/nh-pdf-downloader`
+- Clone this repo to your local machine using `https://github.com/EcchiMaster/nh-pdf-downloader`
 
 #### Setup
 
@@ -59,11 +59,12 @@ There is 3 thread that can be used. so use wisely
 Dont forget to prepare the holy-code ready inside the thread-1.download.txt, thread-2.download.txt, thread-3.download.txt
 ```
 
-$ pip install pyinstaller
-$ pyinstaller **main**.py
+$ python .\autorestart.py
+$ python .\autorestart2.py
+$ python .\autorestart3.py
 
 ```
 
 ```
 
-FORKED 
+FORKED
